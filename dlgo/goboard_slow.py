@@ -1,32 +1,26 @@
 from __future__ import annotations
 import copy
-from typing import Optional, Dict, List, Set, Tuple
+from typing import Optional, Dict, Iterable, List, Tuple
 
 from .gotypes import Player, Point
 
-class Move():
-    def __init__(self, point: Optional[Point]=None,
-                 is_pass:bool=False, is_resign:bool=False):
-        assert (point is not None) ^ is_pass ^ is_resign
+
+class Play():
+    """A stone placement on the board."""
+    
+    def __init__(self, point: Point):
         self.point = point
-        self.is_play = (self.point is not None)
-        self.is_pass = is_pass
-        self.is_resign = is_resign
 
-    @classmethod
-    def play(cls, point: Point) -> Move:
-        return Move(point=point)
+class Resign():
+    pass
 
-    @classmethod
-    def pass_turn(cls) -> Move:
-        return Move(is_pass=True)
+class Pass():
+    pass
 
-    @classmethod
-    def resign(cls) -> Move:
-        return Move(is_resign=True)
+Move = Play | Resign | Pass
 
 class GoString():
-    def __init__(self, color: Player, stones: (List | Set)[Point], liberties: (List | Set)[Point]):
+    def __init__(self, color: Player, stones: Iterable[Point], liberties: Iterable[Point]):
         self.color = color
         self.stones = set(stones)
         self.liberties = set(liberties)
@@ -50,7 +44,7 @@ class GoString():
     def num_liberties(self) -> int:
         return len(self.liberties)
 
-    def __eq__(self, other: GoString) -> bool:
+    def __eq__(self, other: object) -> bool:
         return isinstance(other, GoString) and \
             self.color == other.color and \
             self.stones == other.stones and \
@@ -130,9 +124,8 @@ class GameState():
         return (self.next_player, self.board)
 
     def apply_move(self, move: Move) -> GameState:
-        if move.is_play:
+        if isinstance(move, Play):
             next_board = copy.deepcopy(self.board)
-            assert move.point is not None # TODO fix the type of Move
             next_board.place_stone(self.next_player, move.point)
         else:
             next_board = self.board
@@ -144,16 +137,14 @@ class GameState():
         return GameState(board, Player.black, None, None)
 
     def is_move_self_capture(self, player: Player, move: Move) -> bool:
-        if not move.is_play:
+        if not isinstance(move, Play):
             return False
-        assert move.point is not None # TODO fix the type of Move
         next_board = copy.deepcopy(self.board)
         return next_board.place_stone(player, move.point).num_liberties == 0
 
     def does_move_violate_ko(self, player: Player, move: Move) -> bool:
-        if not move.is_play:
+        if not isinstance(move, Play):
             return False
-        assert move.point is not None # TODO fix the type of Move
         next_board = copy.deepcopy(self.board)
         next_board.place_stone(player, move.point)
         next_situation = (player.other, next_board)
@@ -167,9 +158,8 @@ class GameState():
     def is_valid_move(self, move: Move) -> bool:
         if self.is_over():
             return False
-        if move.is_pass or move.is_resign:
+        if isinstance(move, Pass) or isinstance(move, Resign):
             return True
-        assert move.point is not None # TODO fix the type of Move
         return self.board.get(move.point) is None and \
             not self.is_move_self_capture(self.next_player, move) and \
             not self.does_move_violate_ko(self.next_player, move)
@@ -177,10 +167,10 @@ class GameState():
     def is_over(self) -> bool:
         if self.last_move is None or self.previous_state is None:
             return False
-        if self.last_move.is_resign:
+        if isinstance(self.last_move, Resign):
             return True
         second_last_move = self.previous_state.last_move
         if second_last_move is None:
             return False
-        return self.last_move.is_pass and second_last_move.is_pass
+        return isinstance(self.last_move, Pass) and isinstance(second_last_move, Pass)
 

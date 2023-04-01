@@ -1,7 +1,6 @@
 from __future__ import annotations
-from collections import namedtuple
 import enum
-from typing import List
+from typing import List, NamedTuple
 
 
 class Player(enum.Enum):
@@ -13,7 +12,9 @@ class Player(enum.Enum):
         return Player.black if self == Player.white else Player.white
 
 
-class Point(namedtuple('Point', ['row', 'col'])):
+class Point(NamedTuple):
+    row: int
+    col: int
 
     def neighbors(self) -> List[Point]:
         return [
