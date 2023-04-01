@@ -2,7 +2,7 @@ from typing import List
 from rich import print
 
 from .gotypes import Player, Point
-from .goboard_slow import Board, Move, Pass, Resign
+from .goboard import Board, Move, Pass, Resign
 
 COLS = 'ABCDEFGHJKLMNOPQRST'
 STONE_TO_CHAR = {

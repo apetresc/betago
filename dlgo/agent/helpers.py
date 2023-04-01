@@ -1,5 +1,5 @@
 from ..gotypes import Player, Point
-from ..goboard_slow import Board
+from ..goboard import Board
 
 
 def is_point_an_eye(board: Board, point: Point, color: Player) -> bool:

@@ -1,31 +1,25 @@
 import random
+from typing import Dict, Tuple
 
 from dlgo.gotypes import Player, Point
 
-def to_python(player_state):
-    if player_state is None:
-        return 'None'
-    elif player_state == Player.black:
-        return 'Player.black'
-    return 'Player.white'
-
 MAX63 = 0x7fffffffffffffff
 
-table = {}
+table: Dict[Tuple[Point, Player | None], int] = {}
 empty_board = 0
 for row in range(1, 20):
     for col in range(1, 20):
         for state in (None, Player.black, Player.white):
-            code = random.randint(0, MAX63)
-            table[Point(row, col), state] = code
+            table[Point(row, col), state] = random.randint(0, MAX63)
 
+print('from typing import Dict, Tuple')
 print('from .gotypes import Player, Point')
 print('')
 print("__all__ = ['HASH_CODE', 'EMPTY_BOARD']")
 print('')
-print('HASH_CODE = {')
+print('HASH_CODE: Dict[Tuple[Point, Player | None], int] = {')
 for (pt, state), hash_code in table.items():
-    print('    (%r, %s): %r,' % (pt, to_python(state), hash_code))
+    print('    (%r, %s): %r,' % (pt, str(state), hash_code))
 print('}')
 print('')
 print('EMPTY_BOARD = %d' % random.randint(empty_board, MAX63))

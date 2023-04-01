@@ -1,4 +1,4 @@
-from ..goboard_slow import GameState, Move
+from ..goboard import GameState, Move
 
 class Agent():
     def __init__(self):

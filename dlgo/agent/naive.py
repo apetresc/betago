@@ -3,7 +3,7 @@ from typing import List
 
 from .base import Agent
 from .helpers import is_point_an_eye
-from ..goboard_slow import GameState, Move, Pass, Play
+from ..goboard import GameState, Move, Pass, Play
 from ..gotypes import Point
 
 
