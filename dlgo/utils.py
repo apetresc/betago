@@ -1,13 +1,14 @@
 from typing import List
+from rich import print
 
 from .gotypes import Player, Point
 from .goboard_slow import Board, Move, Pass, Resign
 
 COLS = 'ABCDEFGHJKLMNOPQRST'
 STONE_TO_CHAR = {
-    None: ' ·',
-    Player.black: ' #',
-    Player.white: ' O'
+    None: ' [dim yellow]·[/dim yellow]',
+    Player.black: ' [bold black]#[/bold black]',
+    Player.white: ' [bold white]O[/bold white]',
 }
 
 def print_move(player: Player, move: Move) -> None:
@@ -27,4 +28,4 @@ def print_board(board: Board) -> None:
             stone = board.get(Point(row=row, col=col))
             line.append(STONE_TO_CHAR[stone])
         print(f'{bump}{row} {"".join(line)}')
-    print('    ' + ' '.join(COLS[:board.num_cols]))
+    print('    [bold cyan]' + ' '.join(COLS[:board.num_cols]) + '[/bold cyan]')
