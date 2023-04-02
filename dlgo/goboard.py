@@ -52,6 +52,9 @@ class GoString():
             self.color == other.color and \
             self.stones == other.stones and \
             self.liberties == other.liberties
+    
+    def __deepcopy__(self, memodict: Dict[int, object]={}) -> GoString:
+        return GoString(self.color, self.stones, copy.deepcopy(self.liberties))
 
 
 class Board():
@@ -125,6 +128,18 @@ class Board():
             if other_color_string.num_liberties == 0:
                 self._remove_string(other_color_string)
         return new_string
+
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, Board) and \
+            self.num_rows == other.num_rows and \
+            self.num_cols == other.num_cols and \
+            self._hash == other._hash
+    
+    def __deepcopy__(self, memodict: Dict[int, object]={}) -> Board:
+        new_board = Board(self.num_rows, self.num_cols)
+        new_board._grid = copy.copy(self._grid)
+        new_board._hash = self._hash
+        return new_board
     
     def zobrist_hash(self) -> int:
         return self._hash
