@@ -1,6 +1,6 @@
 from __future__ import annotations
 import copy
-from typing import Optional, Dict, FrozenSet, Iterable, List, Tuple
+from typing import cast, Optional, Dict, FrozenSet, Iterable, List, Tuple
 
 from . import zobrist
 from .gotypes import Player, Point
@@ -179,7 +179,10 @@ class GameState():
         if not isinstance(move, Play):
             return False
         next_board = copy.deepcopy(self.board)
-        return next_board.place_stone(player, move.point).num_liberties == 0
+        next_board.place_stone(player, move.point)
+        # We can cast here because we know the move resulted in a stone being placed
+        new_string = cast(GoString, next_board.get_go_string(move.point))
+        return new_string.num_liberties == 0
 
     def does_move_violate_ko(self, player: Player, move: Move) -> bool:
         if not isinstance(move, Play):
