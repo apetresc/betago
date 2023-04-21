@@ -211,3 +211,14 @@ class GameState():
             return False
         return isinstance(self.last_move, Pass) and isinstance(second_last_move, Pass)
 
+    def legal_moves(self) -> List[Point]:
+        moves: List[Point] = []
+        if self.is_over():
+            return moves
+        for r in range(1, self.board.num_rows + 1):
+            for c in range(1, self.board.num_cols + 1):
+                point = Point(r, c)
+                if self.is_valid_move(Play(point)):
+                    moves.append(point)
+        return moves
+
